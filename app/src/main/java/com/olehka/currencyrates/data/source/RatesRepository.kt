@@ -1,6 +1,14 @@
 package com.olehka.currencyrates.data.source
 
-interface RatesRepository {
+import javax.inject.Inject
+import javax.inject.Singleton
 
-    fun getRates(currency: String)
+@Singleton
+class RatesRepository @Inject constructor(
+    private val remoteDataSource: RemoteDataSource
+) {
+
+    fun getRates(currency: String) {
+        remoteDataSource.getRates(currency)
+    }
 }
