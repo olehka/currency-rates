@@ -1,6 +1,11 @@
 package com.olehka.currencyrates.data.source
 
-class RemoteDataSource {
+import com.olehka.currencyrates.api.RatesService
+import javax.inject.Inject
 
-    fun getRates(currency: String) {}
+class RemoteDataSource @Inject constructor(
+    private val service: RatesService
+) {
+
+    suspend fun getRates(currency: String) = service.getRates(currency)
 }

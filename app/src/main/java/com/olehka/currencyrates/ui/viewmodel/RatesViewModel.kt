@@ -1,7 +1,7 @@
 package com.olehka.currencyrates.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.olehka.currencyrates.data.source.RatesRepository
+import com.olehka.currencyrates.data.RatesRepository
 import javax.inject.Inject
 
 class RatesViewModel

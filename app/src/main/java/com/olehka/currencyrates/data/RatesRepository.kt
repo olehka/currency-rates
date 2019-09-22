@@ -1,5 +1,6 @@
-package com.olehka.currencyrates.data.source
+package com.olehka.currencyrates.data
 
+import com.olehka.currencyrates.data.source.RemoteDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -9,6 +10,6 @@ class RatesRepository @Inject constructor(
 ) {
 
     fun getRates(currency: String) {
-        remoteDataSource.getRates(currency)
+//        remoteDataSource.getRates(currency)
     }
 }
