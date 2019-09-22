@@ -12,9 +12,9 @@ class RatesRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) {
 
-    suspend fun getRates(currency: String): Result<RatesResponse> {
+    suspend fun getCurrencyRates(currency: String): Result<RatesResponse> {
         return withContext(Dispatchers.IO) {
-            remoteDataSource.getRates(currency)
+            remoteDataSource.getCurrencyRates(currency)
         }
     }
 }

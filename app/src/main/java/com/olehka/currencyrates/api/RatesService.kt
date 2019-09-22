@@ -11,5 +11,5 @@ interface RatesService {
     }
 
     @GET("latest")
-    suspend fun getRates(@Query("base") baseCurrency: String? = null): Response<RatesResponse>
+    suspend fun getCurrencyRates(@Query("base") baseCurrency: String? = null): Response<RatesResponse>
 }

@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.olehka.currencyrates.data.RatesRepository
 import com.olehka.currencyrates.data.Result
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -14,17 +13,23 @@ class RatesViewModel
     private val ratesRepository: RatesRepository
 ) : ViewModel() {
 
-    fun loadRates(currency: String) {
-        viewModelScope.launch {
-            while (true) {
-                delay(2_000)
-                ratesRepository.getRates(currency).let { result ->
-                    if (result is Result.Success) {
-                        Timber.v("${result.data.baseCurrency}: ${result.data.rates?.toList()?.joinToString()}")
-                    } else {
-                        Timber.v("Data not available :|")
+    private lateinit var ratesJob: Job
+
+    fun loadCurrencyRates(currency: String) {
+        if (::ratesJob.isInitialized && ratesJob.isActive) {
+            ratesJob.cancel()
+        }
+        ratesJob = viewModelScope.launch {
+            while (isActive) {
+                ratesRepository.getCurrencyRates(currency).let { result ->
+                    when (result) {
+                        is Result.Success ->
+                            Timber.v("${result.data.baseCurrency}: ${result.data.rates?.toList()?.joinToString()}")
+                        is Result.Error ->
+                            Timber.e("Currency rates loading error")
                     }
                 }
+                delay(1_000)
             }
         }
     }

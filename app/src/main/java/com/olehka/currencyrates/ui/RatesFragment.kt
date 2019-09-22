@@ -38,9 +38,11 @@ class RatesFragment : DaggerFragment() {
 
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadRates(currency = "EUR")
+            viewModel.loadCurrencyRates(currency = "EUR")
             delay(10_000)
-            viewModel.loadRates(currency = "AUD")
+            viewModel.loadCurrencyRates(currency = "AUD")
+            delay(5_000)
+            viewModel.loadCurrencyRates(currency = "GBP")
         }
     }
 
