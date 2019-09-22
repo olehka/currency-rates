@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
     private val service: RatesService
-) {
+): BaseDataSource() {
 
-    suspend fun getRates(currency: String) = service.getRates(currency)
+    suspend fun getRates(currency: String) = getResult { service.getRates(currency) }
 }

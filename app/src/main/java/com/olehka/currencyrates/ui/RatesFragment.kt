@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.olehka.currencyrates.databinding.FragmentRatesBinding
 import com.olehka.currencyrates.ui.viewmodel.RatesViewModel
 import dagger.android.support.DaggerFragment
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -34,7 +37,11 @@ class RatesFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        viewModel.loadRates()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadRates(currency = "EUR")
+            delay(10_000)
+            viewModel.loadRates(currency = "AUD")
+        }
     }
 
 }
