@@ -1,7 +1,7 @@
 package com.olehka.currencyrates.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.olehka.currencyrates.data.CurrencyRate
 import com.olehka.currencyrates.data.RatesRepository
 import com.olehka.currencyrates.data.Result
 import kotlinx.coroutines.*
@@ -15,6 +15,12 @@ class RatesViewModel
 
     private lateinit var ratesJob: Job
 
+    private val mutableRateList =
+        MutableLiveData<List<CurrencyRate>>().apply { value = emptyList() }
+    val rateList: LiveData<List<CurrencyRate>> = mutableRateList
+
+    val empty: LiveData<Boolean> = Transformations.map(mutableRateList) { it.isEmpty() }
+
     fun loadCurrencyRates(currency: String) {
         if (::ratesJob.isInitialized && ratesJob.isActive) {
             ratesJob.cancel()
@@ -23,10 +29,19 @@ class RatesViewModel
             while (isActive) {
                 ratesRepository.getCurrencyRates(currency).let { result ->
                     when (result) {
-                        is Result.Success ->
+                        is Result.Success -> {
                             Timber.v("${result.data.baseCurrency}: ${result.data.rates?.toList()?.joinToString()}")
-                        is Result.Error ->
+                            mutableRateList.value = result.data.rates?.entries?.map { entry ->
+                                CurrencyRate(
+                                    currency = entry.key,
+                                    rateValue = entry.value
+                                )
+                            }
+                        }
+                        is Result.Error -> {
                             Timber.e("Currency rates loading error")
+                            mutableRateList.value = emptyList()
+                        }
                     }
                 }
                 delay(1_000)

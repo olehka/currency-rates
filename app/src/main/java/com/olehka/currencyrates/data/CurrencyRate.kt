@@ -1,6 +1,9 @@
 package com.olehka.currencyrates.data
 
+import java.util.*
+
 data class CurrencyRate(
+    val id: String = UUID.randomUUID().toString(),
     val currency: String,
-    val rate: Float
+    val rateValue: Float
 )
