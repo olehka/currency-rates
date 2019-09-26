@@ -43,17 +43,18 @@ class RatesFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        listAdapter = RatesAdapter()
+        listAdapter = RatesAdapter(viewModel)
         viewModel.rateList.observe(this, Observer { list -> listAdapter.submitList(list) })
         viewDataBinding.ratesList.adapter = listAdapter
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadCurrencyRates(currency = "EUR")
-            delay(10_000)
-            viewModel.loadCurrencyRates(currency = "AUD")
-            delay(5_000)
-            viewModel.loadCurrencyRates(currency = "GBP")
-        }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadCurrencyRates()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.cancelActiveJob()
+    }
 }
