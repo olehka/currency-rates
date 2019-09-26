@@ -1,6 +1,7 @@
 package com.olehka.currencyrates.data
 
 data class CurrencyRate(
-    val currency: String,
+    val code: String,
+    val name: String,
     val value: Float
 )

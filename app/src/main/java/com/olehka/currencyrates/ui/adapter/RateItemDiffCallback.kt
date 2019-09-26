@@ -5,7 +5,7 @@ import com.olehka.currencyrates.data.CurrencyRate
 
 class RateItemDiffCallback : DiffUtil.ItemCallback<CurrencyRate>() {
     override fun areItemsTheSame(oldItem: CurrencyRate, newItem: CurrencyRate): Boolean {
-        return oldItem.currency == newItem.currency
+        return oldItem.code == newItem.code
     }
 
     override fun areContentsTheSame(oldItem: CurrencyRate, newItem: CurrencyRate): Boolean {

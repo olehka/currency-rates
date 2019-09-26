@@ -55,15 +55,19 @@ class RatesViewModel
 
     fun onBaseCurrencyValueChanged(currency: String, value: Float) {
         Timber.v("onBaseCurrencyValueChanged: $currency: $value")
-        baseCurrency = currency
-        baseValue = value
-        loadCurrencyRates()
+        if (baseCurrency != currency || baseValue != value) {
+            baseCurrency = currency
+            baseValue = value
+            loadCurrencyRates()
+        }
     }
 
     fun onBaseValueChanged(value: Float) {
         Timber.v("onBaseValueChanged: $value")
-        baseValue = value
-        mutableRateList.value = repository.getSavedCurrencyRates(baseValue)
+        if (baseValue != value) {
+            baseValue = value
+            mutableRateList.value = repository.getSavedCurrencyRates(baseValue)
+        }
     }
 
     fun cancelActiveJob() {

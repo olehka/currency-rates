@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.olehka.currencyrates.data.CurrencyRate
 import com.olehka.currencyrates.databinding.RateItemBinding
 import com.olehka.currencyrates.ui.viewmodel.RatesViewModel
+import com.olehka.currencyrates.util.getCurrencyFlagResId
+import timber.log.Timber
 
 
 class RatesAdapter(private val viewModel: RatesViewModel) :
@@ -39,6 +41,15 @@ class RatesAdapter(private val viewModel: RatesViewModel) :
             binding.value.let {
                 it.doOnTextChanged { text, _, _, _ ->
                     if (layoutPosition == 0) {
+                        text.toString().let { string ->
+                            if (string.isEmpty()) viewModel.onBaseValueChanged(0f)
+                            else string.toFloatOrNull()?.let { value ->
+                                viewModel.onBaseValueChanged(value)
+                            }
+                        }
+                        text.toString().ifEmpty {
+                            viewModel.onBaseValueChanged(0f)
+                        }
                         text.toString().toFloatOrNull()?.let { value ->
                             viewModel.onBaseValueChanged(value)
                         }
@@ -46,7 +57,10 @@ class RatesAdapter(private val viewModel: RatesViewModel) :
                 }
                 it.setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus && layoutPosition > 0) {
-                        viewModel.onBaseCurrencyValueChanged(rate.currency, it.text.toString().toFloat())
+                        viewModel.onBaseCurrencyValueChanged(
+                            rate.code,
+                            it.text.toString().toFloat()
+                        )
                     }
                 }
             }
