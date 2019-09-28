@@ -24,25 +24,27 @@ android {
         enabled = true
         enabledForTests = true
     }
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "androidx.fragment:fragment-ktx:1.1.0"
 
     implementation "com.google.android.material:material:1.0.0"
-    implementation "androidx.fragment:fragment-ktx:1.1.0"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
@@ -56,4 +58,19 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    testImplementation 'junit:junit:4.12'
+
+    testImplementation('androidx.test:runner:1.2.0')
+    testImplementation('androidx.test.ext:junit:1.1.1')
+    testImplementation('androidx.test.espresso:espresso-intents:3.2.0')
+    testImplementation('androidx.test.espresso:espresso-core:3.2.0')
+    testImplementation('androidx.test.ext:truth:1.2.0')
+    testImplementation ('org.robolectric:robolectric:4.3')
+
+    androidTestImplementation('androidx.test:runner:1.2.0')
+    androidTestImplementation('androidx.test.ext:junit:1.1.1')
+    androidTestImplementation('androidx.test.espresso:espresso-intents:3.2.0')
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.2.0')
+    androidTestImplementation('androidx.test.ext:truth:1.2.0')
 }

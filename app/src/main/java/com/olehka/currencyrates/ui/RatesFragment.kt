@@ -7,13 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.olehka.currencyrates.databinding.FragmentRatesBinding
 import com.olehka.currencyrates.ui.adapter.RatesAdapter
 import com.olehka.currencyrates.ui.viewmodel.RatesViewModel
 import dagger.android.support.DaggerFragment
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -50,7 +47,7 @@ class RatesFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadCurrencyRates()
+        viewModel.startPeriodicCurrencyRatesUpdate()
     }
 
     override fun onPause() {

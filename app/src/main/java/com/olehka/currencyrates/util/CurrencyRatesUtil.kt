@@ -7,29 +7,31 @@ import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
-fun provideCurrencyRateList(response: RatesResponse, baseCurrencyValue: Float): List<CurrencyRate> {
-    val list = ArrayList<CurrencyRate>()
-    if (response.baseCurrency == null || response.rates == null) {
-        return list
+fun RatesResponse.toListOfCurrencyRates(): List<CurrencyRate> {
+    if (baseCurrency == null || rates == null) {
+        return emptyList()
     }
+    val list = ArrayList<CurrencyRate>()
     list.add(
         CurrencyRate(
-            code = response.baseCurrency,
-            name = getCurrencyName(response.baseCurrency),
-            value = baseCurrencyValue
+            code = baseCurrency,
+            name = getCurrencyName(baseCurrency),
+            value = 1f
         )
     )
-    response.rates.entries.map { entry ->
+    rates.entries.map { entry ->
         CurrencyRate(
             code = entry.key,
             name = getCurrencyName(entry.key),
-            value = entry.value * baseCurrencyValue
+            value = entry.value
         )
     }.also {
         list.addAll(it)
     }
     return list
 }
+
+fun List<CurrencyRate>.mapValues(baseValue: Float) = map { CurrencyRate(it.code, it.name, baseValue * it.value) }
 
 fun getCurrencyFlagResId(context: Context, code: String) = context.resources.getIdentifier(
     "ic_${code}_flag", "mipmap", context.packageName

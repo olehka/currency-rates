@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.olehka.currencyrates.data.CurrencyRate
 import com.olehka.currencyrates.data.RatesRepository
 import com.olehka.currencyrates.data.Result
+import com.olehka.currencyrates.util.mapValues
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class RatesViewModel
     private val repository: RatesRepository
 ) : ViewModel() {
 
-    private lateinit var ratesJob: Job
+    private lateinit var periodicJob: Job
 
     private var baseCurrency = EURO
     private var baseValue = DEFAULT_VALUE
@@ -32,24 +33,20 @@ class RatesViewModel
         Timber.e(exception)
     }
 
-    fun loadCurrencyRates() {
+    fun startPeriodicCurrencyRatesUpdate() {
         cancelActiveJob()
         // alternative: liveData building block
-        ratesJob = viewModelScope.launch(exceptionHandler) {
+        periodicJob = viewModelScope.launch(exceptionHandler) {
             while (isActive) {
-                repository.getCurrencyRatesFromNetwork(baseCurrency, baseValue).let { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            mutableRateList.value = result.data
-                        }
-                        is Result.Error -> {
-                            mutableRateList.value = emptyList()
-                            // also: showSnackbar with error message
-                        }
-                    }
-                }
+                updateRateList(repository.getCurrencyRates(baseCurrency, fromNetwork = true))
                 delay(DELAY_MILLIS)
             }
+        }
+    }
+
+    fun getCurrencyRatesFromCache() {
+        viewModelScope.launch(exceptionHandler) {
+            updateRateList(repository.getCurrencyRates(baseCurrency))
         }
     }
 
@@ -58,7 +55,7 @@ class RatesViewModel
         if (baseCurrency != currency || baseValue != value) {
             baseCurrency = currency
             baseValue = value
-            loadCurrencyRates()
+            startPeriodicCurrencyRatesUpdate()
         }
     }
 
@@ -66,13 +63,25 @@ class RatesViewModel
         Timber.v("onBaseValueChanged: $value")
         if (baseValue != value) {
             baseValue = value
-            mutableRateList.value = repository.getSavedCurrencyRates(baseValue)
+            getCurrencyRatesFromCache()
         }
     }
 
     fun cancelActiveJob() {
-        if (::ratesJob.isInitialized && ratesJob.isActive) {
-            ratesJob.cancel()
+        if (::periodicJob.isInitialized && periodicJob.isActive) {
+            periodicJob.cancel()
+        }
+    }
+
+    private fun updateRateList(result: Result<List<CurrencyRate>>) {
+        when (result) {
+            is Result.Success -> {
+                mutableRateList.value = result.data.mapValues(baseValue)
+            }
+            is Result.Error -> {
+                mutableRateList.value = emptyList()
+                // also: showSnackbar with error message
+            }
         }
     }
 }
