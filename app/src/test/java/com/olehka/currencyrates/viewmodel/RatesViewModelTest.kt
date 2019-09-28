@@ -1,0 +1,76 @@
+package com.olehka.currencyrates.viewmodel
+
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.google.common.truth.Truth.assertThat
+import com.olehka.currencyrates.MainCoroutineRule
+import com.olehka.currencyrates.data.FakeRepository
+import com.olehka.currencyrates.util.getRatesBaseEur_1
+import com.olehka.currencyrates.util.getRatesBaseZar_1
+import com.olehka.currencyrates.ui.viewmodel.RatesViewModel
+import com.olehka.currencyrates.util.LiveDataTestUtil
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+@ExperimentalCoroutinesApi
+class RatesViewModelTest {
+
+    private lateinit var ratesViewModel: RatesViewModel
+
+    private lateinit var ratesRepository: FakeRepository
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    @Before
+    fun setupViewModel() {
+        ratesRepository = FakeRepository()
+        ratesRepository.addCurrencyRates("EUR", getRatesBaseEur_1())
+        ratesRepository.addCurrencyRates("ZAR", getRatesBaseZar_1())
+        ratesViewModel = RatesViewModel(ratesRepository)
+    }
+
+    @Test
+    fun getCurrencyRates_fromLocalCache() {
+        ratesViewModel.getCurrencyRatesFromCache()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).hasSize(3)
+    }
+
+    @Test
+    fun getCurrencyRates_startPeriodicUpdate() {
+        ratesViewModel.startPeriodicCurrencyRatesUpdate()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).hasSize(3)
+    }
+
+    @Test
+    fun getCurrencyRates_withError() {
+        ratesRepository.shouldReturnError = true
+        ratesViewModel.getCurrencyRatesFromCache()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+        ratesViewModel.startPeriodicCurrencyRatesUpdate()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+    }
+
+    @Test
+    fun getCurrencyRates_updateBaseValue() {
+        ratesViewModel.onBaseValueChanged(200f)
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)[0].value).isEqualTo(200f)
+    }
+
+    @Test
+    fun getCurrencyRates_updateBaseCurrency() {
+        ratesViewModel.onBaseCurrencyValueChanged("ZAR", 100f)
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)[0].code).isEqualTo("ZAR")
+    }
+
+    @Test
+    fun getCurrencyRates_wrongBaseCurrency() {
+        ratesViewModel.onBaseCurrencyValueChanged("UAH", 100f)
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+    }
+}

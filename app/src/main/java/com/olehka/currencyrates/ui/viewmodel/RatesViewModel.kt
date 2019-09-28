@@ -3,6 +3,7 @@ package com.olehka.currencyrates.ui.viewmodel
 import androidx.lifecycle.*
 import com.olehka.currencyrates.data.CurrencyRate
 import com.olehka.currencyrates.data.RatesRepository
+import com.olehka.currencyrates.data.Repository
 import com.olehka.currencyrates.data.Result
 import com.olehka.currencyrates.util.mapValues
 import kotlinx.coroutines.*
@@ -14,9 +15,7 @@ const val DEFAULT_VALUE = 100f
 const val EURO = "EUR"
 
 class RatesViewModel
-@Inject constructor(
-    private val repository: RatesRepository
-) : ViewModel() {
+@Inject constructor(private val repository: Repository) : ViewModel() {
 
     private lateinit var periodicJob: Job
 

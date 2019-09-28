@@ -1,11 +1,14 @@
 package com.olehka.currencyrates.di
 
 import com.olehka.currencyrates.api.RatesService
+import com.olehka.currencyrates.data.RatesRepository
+import com.olehka.currencyrates.data.Repository
 import com.olehka.currencyrates.data.source.DataSource
 import com.olehka.currencyrates.data.source.LocalDataSource
 import com.olehka.currencyrates.data.source.RemoteDataSource
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
@@ -45,4 +48,17 @@ class ApplicationModule {
             .build()
             .create(RatesService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideRatesRepository(
+        @RemoteSource remoteDataSource: DataSource,
+        @LocalSource localDataSource: DataSource
+    ): Repository {
+        return RatesRepository(remoteDataSource, localDataSource)
+    }
+
+    @Singleton
+    @Provides
+    fun provideIoDispatcher() = Dispatchers.IO
 }

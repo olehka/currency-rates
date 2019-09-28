@@ -1,13 +1,11 @@
 package com.olehka.currencyrates.data.source
 
-import com.olehka.currencyrates.api.RatesResponse
 import com.olehka.currencyrates.api.RatesService
 import com.olehka.currencyrates.data.CurrencyRate
 import com.olehka.currencyrates.data.Result
 import com.olehka.currencyrates.util.toListOfCurrencyRates
 import retrofit2.Response
 import timber.log.Timber
-import java.lang.Exception
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
@@ -18,7 +16,15 @@ class RemoteDataSource @Inject constructor(
     override suspend fun getCurrencyRates(baseCurrency: String): Result<List<CurrencyRate>> {
         return when (val result = getResult { service.getCurrencyRates(baseCurrency) }) {
             is Result.Success -> {
-                getSuccessResult(result.data)
+                result.data.let { response ->
+                    Timber.v("${response.baseCurrency}: ${response.rates?.toList()?.joinToString()}")
+                    val rates = response.toListOfCurrencyRates()
+                    if (rates.isNotEmpty()) {
+                        Result.Success(rates)
+                    } else {
+                        Result.Error(Exception("CurrencyRates loading error"))
+                    }
+                }
             }
             is Result.Error -> {
                 result
@@ -40,14 +46,6 @@ class RemoteDataSource @Inject constructor(
         } catch (e: Exception) {
             Timber.e(e)
             return Result.Error(e)
-        }
-    }
-
-    private fun getSuccessResult(response: RatesResponse):
-            Result.Success<List<CurrencyRate>> {
-        return response.let {
-            Timber.v("${it.baseCurrency}: ${it.rates?.toList()?.joinToString()}")
-            Result.Success(it.toListOfCurrencyRates())
         }
     }
 }
