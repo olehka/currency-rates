@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-@Module(includes = [ViewModelModule::class])
+@Module
 class ApplicationModule {
 
     @Qualifier

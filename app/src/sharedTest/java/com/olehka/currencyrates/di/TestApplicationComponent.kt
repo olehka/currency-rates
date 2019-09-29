@@ -2,6 +2,7 @@ package com.olehka.currencyrates.di
 
 import android.content.Context
 import com.olehka.currencyrates.RatesApplication
+import com.olehka.currencyrates.data.Repository
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -12,15 +13,17 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AndroidSupportInjectionModule::class,
-        ApplicationModule::class,
+        TestApplicationModule::class,
         ViewModelModule::class,
         FragmentModule::class
     ]
 )
-interface ApplicationComponent : AndroidInjector<RatesApplication> {
+interface TestApplicationComponent : AndroidInjector<RatesApplication> {
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance applicationContext: Context): ApplicationComponent
+        fun create(@BindsInstance applicationContext: Context): TestApplicationComponent
     }
+
+    val repository: Repository
 }
