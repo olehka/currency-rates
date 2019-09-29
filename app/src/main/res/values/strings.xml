@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Currency Rates</string>
-    <string name="no_rates">No rates</string>
+    <string name="empty_list">Empty list</string>
     <string name="flag">Flag</string>
     <string name="zero">0.00</string>
+    <string name="currency_rates_loading_error">Currency rates loading error</string>
 </resources>

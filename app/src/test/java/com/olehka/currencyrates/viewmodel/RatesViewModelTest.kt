@@ -3,6 +3,7 @@ package com.olehka.currencyrates.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.olehka.currencyrates.MainCoroutineRule
+import com.olehka.currencyrates.R
 import com.olehka.currencyrates.data.FakeRepository
 import com.olehka.currencyrates.util.getRatesBaseEur_1
 import com.olehka.currencyrates.util.getRatesBaseZar_1
@@ -37,7 +38,7 @@ class RatesViewModelTest {
 
     @Test
     fun getCurrencyRates_fromLocalCache() {
-        ratesViewModel.getCurrencyRatesFromCache()
+        ratesViewModel.updateCurrencyRatesFromCache()
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).hasSize(3)
     }
 
@@ -50,10 +51,16 @@ class RatesViewModelTest {
     @Test
     fun getCurrencyRates_withError() {
         ratesRepository.shouldReturnError = true
-        ratesViewModel.getCurrencyRatesFromCache()
+        ratesViewModel.updateCurrencyRatesFromCache()
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.shackbarMessage)
+            .getContentIfNotHandled())
+            .isEqualTo(R.string.currency_rates_loading_error)
         ratesViewModel.startPeriodicCurrencyRatesUpdate()
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.shackbarMessage)
+            .getContentIfNotHandled())
+            .isEqualTo(R.string.currency_rates_loading_error)
     }
 
     @Test
@@ -71,6 +78,12 @@ class RatesViewModelTest {
     @Test
     fun getCurrencyRates_wrongBaseCurrency() {
         ratesViewModel.onBaseCurrencyValueChanged("UAH", 100f)
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+    }
+
+    @Test
+    fun clearCurrencyRatesList() {
+        ratesViewModel.clearCurrencyRatesList()
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
     }
 }

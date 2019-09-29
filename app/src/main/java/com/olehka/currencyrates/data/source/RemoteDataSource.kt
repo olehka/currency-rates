@@ -22,7 +22,7 @@ class RemoteDataSource @Inject constructor(
                     if (rates.isNotEmpty()) {
                         Result.Success(rates)
                     } else {
-                        Result.Error(Exception("CurrencyRates loading error"))
+                        Result.Error(Exception("loading error"))
                     }
                 }
             }

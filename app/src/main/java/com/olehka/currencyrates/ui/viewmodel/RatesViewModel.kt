@@ -1,13 +1,15 @@
 package com.olehka.currencyrates.ui.viewmodel
 
 import androidx.lifecycle.*
+import com.olehka.currencyrates.R
 import com.olehka.currencyrates.data.CurrencyRate
-import com.olehka.currencyrates.data.RatesRepository
 import com.olehka.currencyrates.data.Repository
 import com.olehka.currencyrates.data.Result
+import com.olehka.currencyrates.util.Event
 import com.olehka.currencyrates.util.mapValues
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 const val DELAY_MILLIS = 1_000L
@@ -28,12 +30,15 @@ class RatesViewModel
 
     val empty: LiveData<Boolean> = Transformations.map(mutableRateList) { it.isEmpty() }
 
+    private val snackbarText = MutableLiveData<Event<Int>>()
+    val shackbarMessage: LiveData<Event<Int>> = snackbarText
+
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         Timber.e(exception)
     }
 
     fun startPeriodicCurrencyRatesUpdate() {
-        cancelActiveJob()
+        cancelPeriodicCurrencyRatesUpdate()
         // alternative: liveData building block
         periodicJob = viewModelScope.launch(exceptionHandler) {
             while (isActive) {
@@ -43,7 +48,7 @@ class RatesViewModel
         }
     }
 
-    fun getCurrencyRatesFromCache() {
+    fun updateCurrencyRatesFromCache() {
         viewModelScope.launch(exceptionHandler) {
             updateRateList(repository.getCurrencyRates(baseCurrency))
         }
@@ -62,13 +67,19 @@ class RatesViewModel
         Timber.v("onBaseValueChanged: $value")
         if (baseValue != value) {
             baseValue = value
-            getCurrencyRatesFromCache()
+            updateCurrencyRatesFromCache()
         }
     }
 
-    fun cancelActiveJob() {
-        if (::periodicJob.isInitialized && periodicJob.isActive) {
+    fun cancelPeriodicCurrencyRatesUpdate() {
+        if (::periodicJob.isInitialized) {
             periodicJob.cancel()
+        }
+    }
+
+    fun clearCurrencyRatesList() {
+        viewModelScope.launch(exceptionHandler) {
+            updateRateList(Result.Error(Exception("loading error")))
         }
     }
 
@@ -79,8 +90,12 @@ class RatesViewModel
             }
             is Result.Error -> {
                 mutableRateList.value = emptyList()
-                // also: showSnackbar with error message
+                showSnackbarMessage(R.string.currency_rates_loading_error)
             }
         }
+    }
+
+    private fun showSnackbarMessage(message: Int) {
+        snackbarText.value = Event(message)
     }
 }

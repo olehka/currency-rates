@@ -10,7 +10,7 @@ class FakeDataSource(
         return if (currencyRates.isNotEmpty() && baseCurrency == currencyRates[0].code) {
             Result.Success(currencyRates)
         } else {
-            Result.Error(Exception("CurrencyRates loading error"))
+            Result.Error(Exception("loading error"))
         }
     }
 

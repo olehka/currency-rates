@@ -14,7 +14,7 @@ class FakeRepository : Repository {
         fromNetwork: Boolean
     ): Result<List<CurrencyRate>> {
         return if (shouldReturnError || !currencyRatesMap.containsKey(baseCurrency)) {
-            Result.Error(Exception("CurrencyRates loading error"))
+            Result.Error(Exception("loading error"))
         } else {
             Result.Success(currencyRatesMap[baseCurrency]!!)
         }

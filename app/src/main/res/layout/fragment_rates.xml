@@ -20,13 +20,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}"
+            app:items="@{viewmodel.rateList}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/no_rates"
+            android:text="@string/empty_list"
             android:textSize="24sp"
             android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}" />
 

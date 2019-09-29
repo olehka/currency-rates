@@ -14,7 +14,7 @@ class LocalDataSource : DataSource {
 
     override suspend fun getCurrencyRates(baseCurrency: String): Result<List<CurrencyRate>> {
         return if (currencyRates.isEmpty() || currencyRates[0].code != baseCurrency) {
-            Result.Error(Exception("CurrencyRates loading error"))
+            Result.Error(Exception("loading error"))
         } else {
             Result.Success(currencyRates)
         }
