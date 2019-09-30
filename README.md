@@ -7,7 +7,7 @@ When you’re changing the amount of money the app simultaneously updates the co
 
 ## Architecture
 
-The app is based on [Android Architecture Components](https://developer.android.com/topic/libraries/architecture) 
+The app is written in [Kotlin](https://kotlinlang.org/) and based on [Android Architecture Components](https://developer.android.com/topic/libraries/architecture) 
 which are the part of [Android Jetpack](https://developer.android.com/jetpack)
 
 ![](./screenshots/android-architecture.png)
@@ -26,7 +26,23 @@ data sources
 
 [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) are used for handling asynchronous or non-blocking tasks
 
-Please note, for the purpose of this task I don't use [Room](https://developer.android.com/training/data-storage/room/index.html) or any other persistence solution
+Please note, for the purpose of this task I don't use any persistence solution
+
+## Testing
+
+The project includes both instrumentation tests that run on the device and local unit tests that run on your computer
+
+### Unit Tests
+
+Repository Test uses fake implementations of remote and local Data Sources
+
+ViewModel Test uses fake implementation of Repository with necessary Test Rules
+
+WebService Test uses [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) for testing REST API interactions
+
+### Device Tests
+
+Fragment Test uses [FragmentScenario](https://developer.android.com/reference/androidx/fragment/app/testing/FragmentScenario) to create fragments and [RecyclerViewActions](https://developer.android.com/reference/androidx/test/espresso/contrib/RecyclerViewActions) to interact with list items
 
 ## Screenshots
 
