@@ -63,6 +63,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/zero"
             android:inputType="numberDecimal"
+            android:imeOptions="actionDone"
             android:text="@{rate.value}"
             android:textColor="@color/colorTitle"
             android:textSize="@dimen/value_text_size"
