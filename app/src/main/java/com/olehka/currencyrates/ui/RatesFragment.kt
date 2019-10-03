@@ -62,7 +62,7 @@ class RatesFragment : DaggerFragment(), ConnectionStateMonitor.OnNetworkAvailabl
     }
 
     override fun onPause() {
-        viewModel.cancelPeriodicCurrencyRatesUpdate()
+        viewModel.isConnected = false
         connectionStateMonitor.disable()
         super.onPause()
     }
@@ -70,15 +70,15 @@ class RatesFragment : DaggerFragment(), ConnectionStateMonitor.OnNetworkAvailabl
     override fun onConnected() {
         Timber.v("onConnected")
         lifecycleScope.launch {
-            viewModel.startPeriodicCurrencyRatesUpdate()
+            viewModel.isConnected = true
         }
     }
 
     override fun onDisconnected() {
         Timber.v("onDisconnected")
         lifecycleScope.launch {
-            viewModel.cancelPeriodicCurrencyRatesUpdate()
-            viewModel.clearCurrencyRatesList()
+            viewModel.isConnected = false
+            viewModel.showErrorMessage()
         }
     }
 }

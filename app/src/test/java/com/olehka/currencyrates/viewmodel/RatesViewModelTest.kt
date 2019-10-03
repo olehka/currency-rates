@@ -44,23 +44,17 @@ class RatesViewModelTest {
 
     @Test
     fun getCurrencyRates_startPeriodicUpdate() {
-        ratesViewModel.startPeriodicCurrencyRatesUpdate()
+        ratesViewModel.isConnected = true
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).hasSize(3)
     }
 
     @Test
-    fun getCurrencyRates_withError() {
+    fun getCurrencyRates_whenError() {
         ratesRepository.shouldReturnError = true
         ratesViewModel.updateCurrencyRatesFromCache()
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
-        assertThat(LiveDataTestUtil.getValue(ratesViewModel.shackbarMessage)
-            .getContentIfNotHandled())
-            .isEqualTo(R.string.currency_rates_loading_error)
-        ratesViewModel.startPeriodicCurrencyRatesUpdate()
+        ratesViewModel.isConnected = true
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
-        assertThat(LiveDataTestUtil.getValue(ratesViewModel.shackbarMessage)
-            .getContentIfNotHandled())
-            .isEqualTo(R.string.currency_rates_loading_error)
     }
 
     @Test
@@ -71,6 +65,7 @@ class RatesViewModelTest {
 
     @Test
     fun getCurrencyRates_updateBaseCurrency() {
+        ratesViewModel.isConnected = true
         ratesViewModel.onBaseCurrencyValueChanged("ZAR", 100f)
         assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)[0].code).isEqualTo("ZAR")
     }
@@ -82,8 +77,11 @@ class RatesViewModelTest {
     }
 
     @Test
-    fun clearCurrencyRatesList() {
-        ratesViewModel.clearCurrencyRatesList()
-        assertThat(LiveDataTestUtil.getValue(ratesViewModel.rateList)).isEmpty()
+    fun testSnackbar_showErrorMessage() {
+        ratesRepository.shouldReturnError = true
+        ratesViewModel.updateCurrencyRatesFromCache()
+        assertThat(LiveDataTestUtil.getValue(ratesViewModel.shackbarMessage)
+            .getContentIfNotHandled())
+            .isEqualTo(R.string.currency_rates_loading_error)
     }
 }

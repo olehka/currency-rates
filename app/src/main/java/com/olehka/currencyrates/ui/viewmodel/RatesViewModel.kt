@@ -37,7 +37,14 @@ class RatesViewModel
         Timber.e(exception)
     }
 
-    fun startPeriodicCurrencyRatesUpdate() {
+    var isConnected: Boolean = false
+        set(value) {
+            field = value
+            if (value) startPeriodicCurrencyRatesUpdate()
+            else cancelPeriodicCurrencyRatesUpdate()
+        }
+
+    private fun startPeriodicCurrencyRatesUpdate() {
         cancelPeriodicCurrencyRatesUpdate()
         // alternative: liveData building block
         periodicJob = viewModelScope.launch(exceptionHandler) {
@@ -56,10 +63,12 @@ class RatesViewModel
 
     fun onBaseCurrencyValueChanged(currency: String, value: Float) {
         Timber.v("onBaseCurrencyValueChanged: $currency: $value")
-        if (baseCurrency != currency || baseValue != value) {
+        if (isConnected && baseCurrency != currency) {
             baseCurrency = currency
             baseValue = value
             startPeriodicCurrencyRatesUpdate()
+        } else {
+            showErrorMessage()
         }
     }
 
@@ -71,15 +80,9 @@ class RatesViewModel
         }
     }
 
-    fun cancelPeriodicCurrencyRatesUpdate() {
+    private fun cancelPeriodicCurrencyRatesUpdate() {
         if (::periodicJob.isInitialized) {
             periodicJob.cancel()
-        }
-    }
-
-    fun clearCurrencyRatesList() {
-        viewModelScope.launch(exceptionHandler) {
-            updateRateList(Result.Error(Exception("loading error")))
         }
     }
 
@@ -89,13 +92,12 @@ class RatesViewModel
                 mutableRateList.value = result.data.mapValues(baseValue)
             }
             is Result.Error -> {
-                mutableRateList.value = emptyList()
-                showSnackbarMessage(R.string.currency_rates_loading_error)
+                showErrorMessage()
             }
         }
     }
 
-    private fun showSnackbarMessage(message: Int) {
-        snackbarText.value = Event(message)
+    fun showErrorMessage() {
+        snackbarText.value = Event(R.string.currency_rates_loading_error)
     }
 }
