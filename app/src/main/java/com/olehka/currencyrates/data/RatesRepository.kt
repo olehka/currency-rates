@@ -14,24 +14,40 @@ class RatesRepository @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : Repository {
 
+    private val cachedRates: MutableList<CurrencyRate> = mutableListOf()
+
     override suspend fun getCurrencyRates(
         baseCurrency: String,
         fromNetwork: Boolean
     ): Result<List<CurrencyRate>> {
-        return if (fromNetwork) {
-            withContext(ioDispatcher) {
+        return withContext(ioDispatcher) {
+            if (fromNetwork) {
                 when (val result = remoteDataSource.getCurrencyRates(baseCurrency)) {
                     is Result.Success -> {
                         localDataSource.saveCurrencyRates(result.data)
+                        updateCache(result.data)
                         result
                     }
                     is Result.Error -> {
                         result
                     }
                 }
+            } else {
+                if (cachedRates.isNotEmpty()) {
+                    Result.Success(cachedRates)
+                } else {
+                    val result = localDataSource.getCurrencyRates(baseCurrency)
+                    if (result is Result.Success) {
+                        updateCache(result.data)
+                    }
+                    result
+                }
             }
-        } else {
-            localDataSource.getCurrencyRates(baseCurrency)
         }
+    }
+
+    private fun updateCache(rates: List<CurrencyRate>) {
+        cachedRates.clear()
+        cachedRates.addAll(rates)
     }
 }
