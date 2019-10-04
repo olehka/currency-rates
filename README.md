@@ -26,7 +26,7 @@ data sources
 
 [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) are used for handling asynchronous or non-blocking tasks
 
-Please note, for the purpose of this task I don't use any persistence solution
+[Room Persistence Library](https://developer.android.com/topic/libraries/architecture/room) is used as a local database layer to support offline mode
 
 ## Testing
 
@@ -43,6 +43,8 @@ WebService Test uses [MockWebServer](https://github.com/square/okhttp/tree/maste
 ### Device Tests
 
 Fragment Test uses [FragmentScenario](https://developer.android.com/reference/androidx/fragment/app/testing/FragmentScenario) to create fragments and [RecyclerViewActions](https://developer.android.com/reference/androidx/test/espresso/contrib/RecyclerViewActions) to interact with list items
+
+Room Dao Test uses [inMemoryDatabase](https://developer.android.com/reference/android/arch/persistence/room/Room#inmemorydatabasebuilder) where stored information disappears when the process is killed
 
 ## Screenshots
 
