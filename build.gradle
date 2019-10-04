@@ -11,6 +11,7 @@ buildscript {
     ext.espressoVersion = '3.2.0'
     ext.robolectricVersion = '4.3'
     ext.roomVersion = '2.2.0-rc01'
+    ext.testCoreVersion = '1.2.0'
 
     repositories {
         google()

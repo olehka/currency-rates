@@ -6,12 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.olehka.currencyrates.databinding.FragmentRatesBinding
 import com.olehka.currencyrates.ui.adapter.RatesAdapter
 import com.olehka.currencyrates.ui.viewmodel.RatesViewModel
 import com.olehka.currencyrates.util.ConnectionStateMonitor
 import com.olehka.currencyrates.util.setupSnackbar
 import dagger.android.support.DaggerFragment
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -67,13 +69,17 @@ class RatesFragment : DaggerFragment(), ConnectionStateMonitor.OnNetworkAvailabl
 
     override fun onConnected() {
         Timber.v("onConnected")
-        viewModel.isConnected = true
+        lifecycleScope.launch {
+            viewModel.isConnected = true
+        }
     }
 
     override fun onDisconnected() {
         Timber.v("onDisconnected")
-        viewModel.isConnected = false
-        viewModel.showErrorMessage()
-        viewModel.updateCurrencyRatesFromCache()
+        lifecycleScope.launch {
+            viewModel.isConnected = false
+            viewModel.showErrorMessage()
+            viewModel.updateCurrencyRatesFromCache()
+        }
     }
 }

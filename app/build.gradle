@@ -82,7 +82,9 @@ dependencies {
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    implementation "androidx.test:core:1.2.0"
+    implementation "androidx.test:core:$testCoreVersion"
+    testImplementation "androidx.test:core:$testCoreVersion"
+    androidTestImplementation "androidx.test:core-ktx:$testCoreVersion"
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:runner:1.2.0'
@@ -108,4 +110,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation('androidx.test.ext:truth:1.2.0')
     androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }

@@ -1,5 +1,6 @@
 package com.olehka.currencyrates.data
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.olehka.currencyrates.data.source.FakeDataSource
 import com.olehka.currencyrates.util.getRatesBaseEur_1
@@ -9,17 +10,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class RatesRepositoryTest {
 
-    private val remoteRatesBaseEur = getRatesBaseEur_2()
     private val localRatesBaseEur = getRatesBaseEur_1()
+    private val remoteRatesBaseEur = getRatesBaseEur_2()
 
     private lateinit var remoteDataSource: FakeDataSource
     private lateinit var localDataSource: FakeDataSource
     private lateinit var ratesRepository: RatesRepository
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @ExperimentalCoroutinesApi
     @Before
@@ -33,7 +38,7 @@ class RatesRepositoryTest {
     @Test
     fun getCurrencyRates_beforeFirstNetworkCall() = runBlockingTest {
         val emptySource = FakeDataSource()
-        val repository = RatesRepository(emptySource, emptySource)
+        val repository = RatesRepository(emptySource, emptySource, Dispatchers.Unconfined)
         assertThat(repository.getCurrencyRates(baseCurrency = "EUR") is Result.Error).isTrue()
     }
 

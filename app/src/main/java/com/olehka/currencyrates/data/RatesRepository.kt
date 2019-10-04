@@ -33,7 +33,7 @@ class RatesRepository @Inject constructor(
                     }
                 }
             } else {
-                if (cachedRates.isNotEmpty()) {
+                if (cachedRates.isNotEmpty() && cachedRates[0].code == baseCurrency) {
                     Result.Success(cachedRates)
                 } else {
                     val result = localDataSource.getCurrencyRates(baseCurrency)
